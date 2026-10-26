@@ -1,4 +1,4 @@
-(executable
- (public_name game_of_life)
- (name main)
- (libraries game_of_life unix dotenv))
+(executables
+ (public_names game_of_life game_of_life_gui)
+ (names main gui)
+ (libraries game_of_life unix dotenv raylib))

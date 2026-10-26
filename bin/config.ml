@@ -17,6 +17,9 @@ let default_seconds_between_generations = 0.1
 let default_random_alive_chance = 0.3
 let default_pattern_margin = 1
 let default_pattern = "random"
+let alive_colour = Raylib.Color.create 255 140 200 255
+let dead_colour = Raylib.Color.create 50 50 50 255
+let gap_between_cells = 1
 
 let read_int name default =
   match Sys.getenv_opt name with

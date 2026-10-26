@@ -1,11 +1,25 @@
 # Game of Life
 Conway's Game of Life in OCaml.
 
-## Run
+## Run TUI
 ```bash
 opam install . --deps-only
 dune exec game_of_life
 ```
+
+## Run GUI
+```bash
+opam install . --deps-only
+dune exec game_of_life_gui
+```
+
+| Input | Does |
+|---|---|
+| Left click | Toggle a cell |
+| Space | Pause / resume |
+| N | Step once |
+| R | Random grid |
+| C | Clear |
 
 ## Configuration
 Set these as environment variables or in a `.env` file (see `.env.example`)
