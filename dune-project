@@ -19,7 +19,7 @@
  (name game_of_life)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends ocaml)
+ (depends ocaml dotenv)
  (tags
   ("add topics" "to describe" your project)))
 
