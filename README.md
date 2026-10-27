@@ -35,4 +35,14 @@ Set these as environment variables or in a `.env` file (see `.env.example`)
 
 Invalid or missing values will fallback to the default
 
+## Benchmark Results
 
+100 generations on a 1000×1000 wrapping grid, `--profile release`.
+
+| Change | ms / generation | MB / generation |
+|---|---|---|
+| Start | 36 | 64 |
+| Loop instead of closure | 29 | 8 |
+| Inner-cell fast path | 18 | 8 |
+| Double buffering | 17 | 0.1 |
+| Parallel (10 cores) | ~4 | 0.0 |

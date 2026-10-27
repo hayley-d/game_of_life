@@ -1,0 +1,3 @@
+(executable
+  (name bench)
+  (libraries game_of_life unix))

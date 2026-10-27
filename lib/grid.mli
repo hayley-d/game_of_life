@@ -11,3 +11,5 @@ val step : grid -> grid
 val equal : grid -> grid -> bool
 val describe_grid_behaviour : grid_behaviour -> string
 val init : int -> int -> grid_behaviour -> (int -> int -> cell) -> grid
+val step_into : grid -> grid -> unit
+val parallel_step_into : int -> grid -> grid -> unit

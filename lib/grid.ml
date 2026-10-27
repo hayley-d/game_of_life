@@ -39,13 +39,23 @@ let neighbour grid x y =
   | Wrap ->
       get grid (wrap_coordinate x grid.width) (wrap_coordinate y grid.height)
 
+let on_edge grid x y =
+  x = 0 || y = 0 || x = grid.width - 1 || y = grid.height - 1
+
 let count_neighbours grid x y =
-  List.fold_left
-    (fun count (dx, dy) ->
-      match neighbour grid (x + dx) (y + dy) with
-      | Alive -> count + 1
-      | Dead -> count)
-    0 neighbour_offsets
+  let is_on_edge = on_edge grid x y in
+  let count = ref 0 in
+  for dy = -1 to 1 do
+    for dx = -1 to 1 do
+      if not (dx = 0 && dy = 0) then
+        let cell =
+          if is_on_edge then neighbour grid (x + dx) (y + dy)
+          else grid.cells.(y + dy).(x + dx)
+        in
+        match cell with Alive -> incr count | Dead -> ()
+    done
+  done;
+  !count
 
 let next_cell cell neighbours =
   match (cell, neighbours) with
@@ -53,13 +63,39 @@ let next_cell cell neighbours =
   | Dead, 3 -> Alive
   | _ -> Dead
 
+let check_same_size source destination =
+  if source.width <> destination.width || source.height <> destination.height
+  then invalid_arg "step_into: grids must be the same size"
+
+let step_rows source destination first_row last_row =
+  for y = first_row to last_row do
+    for x = 0 to source.width - 1 do
+      destination.cells.(y).(x) <-
+        next_cell source.cells.(y).(x) (count_neighbours source x y)
+    done
+  done
+
+let step_into source destination =
+  check_same_size source destination;
+  step_rows source destination 0 (source.height - 1)
+
 let step grid =
-  let cells =
-    Array.init grid.height (fun y ->
-        Array.init grid.width (fun x ->
-            next_cell grid.cells.(y).(x) (count_neighbours grid x y)))
+  let next_grid = create grid.width grid.height grid.behaviour in
+  step_into grid next_grid;
+  next_grid
+
+let parallel_step_into domain_count source destination =
+  if domain_count < 1 then
+    invalid_arg "parallel_step_into: need at least 1 domain";
+  check_same_size source destination;
+  let rows_per_domain = (source.height + domain_count - 1) / domain_count in
+  let spawn_worker index =
+    let first_row = index * rows_per_domain in
+    let last_row = min (first_row + rows_per_domain - 1) (source.height - 1) in
+    Domain.spawn (fun () -> step_rows source destination first_row last_row)
   in
-  { grid with cells }
+  let workers = List.init domain_count spawn_worker in
+  List.iter Domain.join workers
 
 let equal grid_a grid_b = grid_a = grid_b
 
